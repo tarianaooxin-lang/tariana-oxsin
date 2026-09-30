@@ -1,0 +1,21 @@
+{
+  "name": "tariana-oxsin-backend",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Backend for Tariana Oxsin mobile catalog",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node tests/smoke.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.16.3",
+    "pg-mem": "^3.0.5"
+  }
+}
