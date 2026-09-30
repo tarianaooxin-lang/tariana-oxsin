@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: tariana-oxsin
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_INITIAL_PASSWORD
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: tariana-oxsin-db
+          property: connectionString
+  - type: pg
+    name: tariana-oxsin-db
+    plan: free
+    databaseName: tariana_oxsin
+    user: tariana
