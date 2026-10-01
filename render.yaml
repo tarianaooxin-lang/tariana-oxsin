@@ -17,8 +17,9 @@ services:
         fromDatabase:
           name: tariana-oxsin-db
           property: connectionString
-  - type: pg
-    name: tariana-oxsin-db
+
+databases:
+  - name: tariana-oxsin-db
     plan: free
     databaseName: tariana_oxsin
     user: tariana
