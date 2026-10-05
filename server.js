@@ -815,18 +815,34 @@ app.get('/{*splat}', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-/* Start only after database initialization */
-async function start() {
-  try {
-    await initDb();
+/* Start server immediately; initialize database in background */
+let dbReady = false;
 
-    app.listen(PORT, '0.0.0.0', () => {
-      console.log('Server listening on port ' + PORT);
+app.get('/ready', (req, res) => {
+  if (dbReady) {
+    return res.status(200).json({
+      ok: true,
+      service: 'tariana-oxsin-backend',
+      database: 'ready'
     });
-  } catch (err) {
-    console.error('Server startup failed:', err);
-    process.exit(1);
   }
-}
 
-start();
+  res.status(503).json({
+    ok: false,
+    service: 'tariana-oxsin-backend',
+    database: 'initializing'
+  });
+});
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log('Server listening on port ' + PORT);
+
+  initDb()
+    .then(() => {
+      dbReady = true;
+      console.log('Database initialization completed.');
+    })
+    .catch(err => {
+      console.error('Database initialization failed:', err);
+    });
+});
