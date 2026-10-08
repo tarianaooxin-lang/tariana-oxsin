@@ -496,7 +496,50 @@ app.get('/api/admin/catalog', adminAuth, async (req, res) => {
     });
   }
 });
+/* Create product */
+app.post('/api/admin/products', adminAuth, async (req, res) => {
+  try {
+    const b = req.body || {};
+    const name = String(b.name || '').trim();
 
+    if (!name) {
+      return res.status(400).json({
+        message: 'نام کالا الزامی است.'
+      });
+    }
+
+    const id = productId({
+      name: name + '|' + Date.now().toString(36),
+      category: String(b.category || '')
+    });
+
+    const result = await q(
+      `INSERT INTO products
+       (id,name,category,price,stock,updated,tiers,package_count)
+       VALUES ($1,$2,$3,$4,$5,$6,$7::jsonb,$8)
+       RETURNING *`,
+      [
+        id,
+        name,
+        String(b.category || ''),
+        b.price == null ? '' : String(b.price),
+        b.stock == null ? 'موجود' : String(b.stock),
+        new Date().toISOString(),
+        JSON.stringify(b.tiers || {}),
+        b.package_count == null ? '' : String(b.package_count)
+      ]
+    );
+
+    res.status(201).json({
+      product: pubProduct(result.rows[0])
+    });
+  } catch (err) {
+    console.error('Product create error:', err.message);
+    res.status(500).json({
+      message: 'افزودن کالا انجام نشد.'
+    });
+  }
+});
 /* Update product */
 app.put('/api/admin/products/:id', adminAuth, async (req, res) => {
   try {
